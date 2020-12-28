@@ -35,6 +35,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "raylib");
 
     int val = 0;
+    float timePassed = 0;
 
     // Load model
     Model boat = LoadModel("assets/sailboat/sailBoat.obj");
@@ -81,9 +82,22 @@ int main()
         //----------------------------------------------------------------------------------
         UpdateCamera(&camera);
 
-        myPlaneMesh.vertices[1] = (float)(val++ % 20);
+        timePassed += GetFrameTime();
 
-        rlUpdateMesh(myPlaneMesh, 0, myPlaneMesh.vertexCount);
+        if (timePassed >= 0.25) {
+            timePassed = 0;
+
+            for (int i = 0; i < myPlaneMesh.vertexCount; i++)
+            {
+                myPlaneMesh.vertices[i * 3 + 1] = 0.0f;
+            }
+            
+            myPlaneMesh.vertices[val++ % myPlaneMesh.vertexCount * 3 + 1] = 5.0f;
+
+            rlUpdateMesh(myPlaneMesh, 0, myPlaneMesh.vertexCount);
+        }
+
+        
         //----------------------------------------------------------------------------------
 
         // Draw
