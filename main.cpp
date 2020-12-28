@@ -63,7 +63,8 @@ int main()
     int ambientLoc = GetShaderLocation(shader, "ambient");
     SetShaderValue(shader, ambientLoc, (float[4]){ 0.2f, 0.2f, 0.2f, 1.0f }, UNIFORM_VEC4);
 
-    Vector3 position = { 0 };
+    Vector3 waterPosition = {0};
+    Vector3 boatPosition = { 0.0f, 0.1f, 0.0f };
 
     boat.materials[0].shader = shader;
 
@@ -110,8 +111,8 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawModel(myPlane, position, 1.0f, WHITE);
-                // DrawModel(boat, position, 1.0f, WHITE);
+                DrawModel(myPlane, waterPosition, 1.0f, WHITE);
+                DrawModel(boat, boatPosition, 1.0f, WHITE);
 
             EndMode3D();
 
