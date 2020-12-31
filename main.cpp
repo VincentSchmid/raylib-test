@@ -25,6 +25,28 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlight.h"
 
+template <size_t rows, size_t cols>
+void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model grass) 
+{
+    for (int y=0; y < rows; y++) 
+    {
+        float posy = (y - rows / 2.0) * tileSize;
+
+        for (int x=0; x < cols; x++) 
+        {
+            float posx = (x - cols / 2.0) * tileSize;
+
+            switch(terrain[y][x]) 
+            {
+                case 0:
+                    DrawModel(grass, (Vector3){posx, 0, posy}, 1.0f, WHITE);
+                    break;
+            }
+        }
+    }
+}
+
+
 int main() 
 {
     // Initialization
@@ -34,18 +56,13 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "raylib");
 
-    int val = 0;
-    float timePassed = 0;
-
     // Load model
-    Model boat = LoadModel("assets/sailboat/sailBoat.obj");
-    Texture texture = LoadTexture("assets/texel_checker.png");
+    Model grass = LoadModel("assets/3DNaturePack/Models/Plate_Grass_01.obj");
 
-    Mesh myPlaneMesh = GenMeshPlane(10, 10, 5, 5);
-    Model myPlane = LoadModelFromMesh(myPlaneMesh);
-
-    boat.materials[0].maps[MAP_DIFFUSE].texture = texture;
-    myPlane.materials[0].maps[MAP_DIFFUSE].texture = texture;
+    // Create Terrain
+    const int tileSize = 3;
+    const int terrainSize = 10;
+    int terrain [terrainSize][terrainSize] = {{}};
 
     Camera camera = { 0 };
     camera.position = (Vector3){ 10.0f, 10.0f, 8.0f };
@@ -63,10 +80,6 @@ int main()
     int ambientLoc = GetShaderLocation(shader, "ambient");
     SetShaderValue(shader, ambientLoc, (float[4]){ 0.2f, 0.2f, 0.2f, 1.0f }, UNIFORM_VEC4);
 
-    Vector3 waterPosition = {0};
-    Vector3 boatPosition = { 0.0f, 0.1f, 0.0f };
-
-    boat.materials[0].shader = shader;
 
     // Using just 1 point lights
     CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader);
@@ -83,22 +96,6 @@ int main()
         //----------------------------------------------------------------------------------
         UpdateCamera(&camera);
 
-        timePassed += GetFrameTime();
-
-        if (timePassed >= 0.25) {
-            timePassed = 0;
-
-            for (int i = 0; i < myPlaneMesh.vertexCount; i++)
-            {
-                myPlaneMesh.vertices[i * 3 + 1] = 0.0f;
-            }
-            
-            myPlaneMesh.vertices[val++ % myPlaneMesh.vertexCount * 3 + 1] = 5.0f;
-
-            rlUpdateMesh(myPlaneMesh, 0, myPlaneMesh.vertexCount);
-        }
-
-        
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -111,8 +108,7 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawModel(myPlane, waterPosition, 1.0f, WHITE);
-                DrawModel(boat, boatPosition, 1.0f, WHITE);
+                DrawTerrain(terrain, tileSize, grass);
 
             EndMode3D();
 
@@ -124,8 +120,7 @@ int main()
         //----------------------------------------------------------------------------------
     }
 
-    UnloadModel(boat);
-    UnloadTexture(texture);
+    UnloadModel(grass);
     UnloadShader(shader);
     
     // De-Initialization
