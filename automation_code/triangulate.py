@@ -3,6 +3,17 @@ import glob
 from pathlib import Path
 from subprocess import call
 
+"""
+Script to triangulate meshes using Blender
+to run: have Blender in path variables
+replaces the paths in the variable below
+and run Blender --background --python traingulate.py
+
+this script assumes only one object per obj file,
+if that is not the case 
+this line needs to change:
+obj = obj_import_mesh(file)[0]
+"""
 
 import_mesh_folder = "/Users/vincentschmid/Documents/coding/games/testGame/assets/3DNaturePack/Models"
 export_mesh_folder = "/Users/vincentschmid/Documents/coding/games/raylib-game/assets/3DNaturePack/Models"
