@@ -28,9 +28,10 @@ void BirdsEyeCamera::moveRight() {
     cameraMoveDirection = Vector3Add(cameraMoveDirection, right);
 }
 
-void BirdsEyeCamera::applyMove() {
+void BirdsEyeCamera::update() {
     delta_pos = Vector3Scale(Vector3Normalize(cameraMoveDirection), cameraMoveSpeed * GetFrameTime());
     camera->position = Vector3Add(camera->position, delta_pos);
     camera->target = Vector3Add(camera->target, delta_pos);
-    cameraMoveDirection = {0}; 
+    cameraMoveDirection = {0};
+    UpdateCamera(camera);
 }

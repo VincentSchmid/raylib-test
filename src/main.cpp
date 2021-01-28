@@ -101,13 +101,10 @@ int main()
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        checkCorners(screenWidth, screenHeight, hotCornerSize, &inputManager);
         // Update
         //----------------------------------------------------------------------------------
-        checkCorners(screenWidth, screenHeight, hotCornerSize, &inputManager);
-
-        birdsEyeCamera.applyMove();
-        UpdateCamera(&camera);
-
+        birdsEyeCamera.update();
         //----------------------------------------------------------------------------------
 
         // Draw
