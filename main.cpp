@@ -46,6 +46,37 @@ void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model grass)
     }
 }
 
+void MoveCamera(int screenWidth, int screenHeight, int hotCornerSize, float cameraMoveSpeed, Camera *camera) {
+
+    Vector3 forward = {camera->target.x - camera->position.x, 0, camera->target.z - camera->position.z};
+    Vector3 backward = {-forward.x, 0, -forward.z};
+    Vector3 right = {forward.x, 0, -forward.z};
+    Vector3 left = {-forward.x, 0, forward.z};
+
+    Vector3 cameraMoveDirection = {0};
+
+    if (GetMouseX() <= hotCornerSize) {
+        cameraMoveDirection = left;
+    }
+
+    if (GetMouseX() >= screenWidth - hotCornerSize) {
+        cameraMoveDirection = right;
+    }
+
+    if (GetMouseY() <= hotCornerSize) {
+        cameraMoveDirection = Vector3Add(cameraMoveDirection, forward);
+    }
+
+    if (GetMouseY() >= screenHeight - hotCornerSize) {
+        cameraMoveDirection = Vector3Add(cameraMoveDirection, backward);
+    }
+
+    // add camera_move_speed * delta_time * normalized_move_direction to camera position and target
+    Vector3 delta_pos = Vector3Scale(Vector3Normalize(cameraMoveDirection), cameraMoveSpeed * GetFrameTime());
+
+    camera->position = Vector3Add(camera->position, delta_pos);
+    camera->target = Vector3Add(camera->target, delta_pos);
+}
 
 int main() 
 {
@@ -58,18 +89,21 @@ int main()
 
     // Load model
     Model grass = LoadModel("assets/3DNaturePack/Models/Plate_Grass_01.obj");
-
     // Create Terrain
     const int tileSize = 3;
     const int terrainSize = 10;
     int terrain [terrainSize][terrainSize] = {{}};
 
+    // Camera Params
     Camera camera = { 0 };
-    camera.position = (Vector3){ 10.0f, 10.0f, 8.0f };
+    camera.position = (Vector3){ -10.0f, 10.0f, 10.0f };
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 60.0f;
     camera.type = CAMERA_PERSPECTIVE;
+
+    const int hotCornerSize = 100;
+    const float cameraMoveSpeed = 20;
 
     // Load shader and set up some uniforms
     Shader shader = LoadShader("data/base_lighting.vs", "data/lighting.fs");
@@ -84,7 +118,7 @@ int main()
     // Using just 1 point lights
     CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader);
 
-    SetCameraMode(camera, CAMERA_THIRD_PERSON);
+    SetCameraMode(camera, CAMERA_CUSTOM);
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -94,6 +128,7 @@ int main()
     {
         // Update
         //----------------------------------------------------------------------------------
+        MoveCamera(screenWidth, screenHeight, hotCornerSize, cameraMoveSpeed, &camera);
         UpdateCamera(&camera);
 
         //----------------------------------------------------------------------------------
@@ -112,7 +147,9 @@ int main()
 
             EndMode3D();
 
-            DrawText("This is a raylib example", 10, 40, 20, DARKGRAY);
+            DrawText(TextFormat("%f", camera.position.x), 10, 40, 20, DARKGRAY);
+            DrawText(TextFormat("%f", camera.position.y), 10, 60, 20, DARKGRAY);
+            DrawText(TextFormat("%f", camera.position.z), 10, 80, 20, DARKGRAY);
 
             DrawFPS(10, 10);
 
