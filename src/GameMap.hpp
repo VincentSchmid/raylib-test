@@ -23,11 +23,11 @@ class GameMap {
     public:
         GameMap(int rows, int cols);
         void drawMap();
+        void unloadMap();
 
     private:
         void drawTerrain();
         void drawVegetation();
-        void unloadMap();
 };
 
 GameMap::GameMap(int rows, int cols) {

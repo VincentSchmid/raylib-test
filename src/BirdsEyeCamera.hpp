@@ -3,8 +3,10 @@
 
 #include "raylib.h"
 
+
 class BirdsEyeCamera {
     public:
+        Camera camera;
 
     private:
         float cameraMoveSpeed;
@@ -14,11 +16,9 @@ class BirdsEyeCamera {
         Vector3 right;
         Vector3 cameraMoveDirection;
         Vector3 delta_pos;
-        
-        Camera *camera;
 
     public:
-        BirdsEyeCamera(Camera *camera, float cameraMoveSpeed);
+        BirdsEyeCamera(Vector3 camPos, Vector3 camTarget, Vector3 up, float camFovy, int camType, float camSpeed);
         void moveForward();
         void moveBackward();
         void moveLeft();

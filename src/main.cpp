@@ -36,26 +36,20 @@ int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    GameSettings* settings = GameSettings::getInstance();
+    // Load Game Parameters
+    ameSettings* settings = GameSettings::getInstance();
     InitWindow(settings->screenWidth, settings->screenHeight, "raylib");
     
+    // Generate Map
     GameMap gameMap(2, 3);
 
-    // Load model
-    const int modelCount = 3;
+    // Generate Camera
+    BirdsEyeCamera birdsEyeCamera(
+        settings->camPos, settings->camTarget, settings->upAxis, 
+        settings->camFovy, settings->camType, settings->camSpeed);
 
-    // Camera Params
-    Camera camera = { 0 };
-    camera.position = (Vector3){ -10.0f, 10.0f, 10.0f };
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 60.0f;
-    camera.type = CAMERA_PERSPECTIVE;
-
-    
-
-    SetCameraMode(camera, CAMERA_CUSTOM);
-    BirdsEyeCamera birdsEyeCamera(&camera, settings->camSpeed);
+    // Load GameControls
+    ControlHandler inputManager(&birdsEyeCamera);
 
     // Load shader and set up some uniforms
     Shader shader = LoadShader("data/base_lighting.vs", "data/lighting.fs");
@@ -68,8 +62,6 @@ int main()
 
     // Using just 1 point lights
     CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader);
-
-    ControlHandler inputManager(&birdsEyeCamera);
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -89,17 +81,17 @@ int main()
 
             ClearBackground(RAYWHITE);
             // Update the light shader with the camera view position
-            SetShaderValue(shader, shader.locs[LOC_VECTOR_VIEW], &camera.position.x, UNIFORM_VEC3);
+            SetShaderValue(shader, shader.locs[LOC_VECTOR_VIEW], &birdsEyeCamera.camera.position.x, UNIFORM_VEC3);
 
-            BeginMode3D(camera);
+            BeginMode3D(birdsEyeCamera.camera);
 
                 gameMap.drawMap();
 
             EndMode3D();
 
-            DrawText(TextFormat("%f", camera.position.x), 10, 40, 20, DARKGRAY);
-            DrawText(TextFormat("%f", camera.position.y), 10, 60, 20, DARKGRAY);
-            DrawText(TextFormat("%f", camera.position.z), 10, 80, 20, DARKGRAY);
+            DrawText(TextFormat("%f", birdsEyeCamera.camera.position.x), 10, 40, 20, DARKGRAY);
+            DrawText(TextFormat("%f", birdsEyeCamera.camera.position.y), 10, 60, 20, DARKGRAY);
+            DrawText(TextFormat("%f", birdsEyeCamera.camera.position.z), 10, 80, 20, DARKGRAY);
 
             DrawFPS(10, 10);
 
@@ -110,6 +102,7 @@ int main()
 
 
     UnloadShader(shader);
+    gameMap.unloadMap();
     
     // De-Initialization
     //--------------------------------------------------------------------------------------
