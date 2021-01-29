@@ -4,20 +4,21 @@
 #include "ControlHandler.hpp"
 
 void checkCorners(int screenWidth, int screenHeight, int hotCornerSize, ControlHandler *controlHandler) {
-    if (GetMouseX() <= hotCornerSize) {
-        controlHandler->moveCameraLeft();
-    }
+    if (IsWindowFocused()) {
+        if (GetMouseX() <= hotCornerSize) {
+            controlHandler->moveCameraLeft();
+        }
 
-    if (GetMouseX() >= screenWidth - hotCornerSize) {
-        controlHandler->moveCameraRight();
-    }
+        if (GetMouseX() >= screenWidth - hotCornerSize) {
+            controlHandler->moveCameraRight();
+        }
 
-    if (GetMouseY() <= hotCornerSize) {
-        controlHandler->moveCameraForward();
-    }
+        if (GetMouseY() <= hotCornerSize) {
+            controlHandler->moveCameraForward();
+        }
 
-    if (GetMouseY() >= screenHeight - hotCornerSize) {
-        controlHandler->moveCameraBackward();
+        if (GetMouseY() >= screenHeight - hotCornerSize) {
+            controlHandler->moveCameraBackward();
+        }
     }
-
 };
