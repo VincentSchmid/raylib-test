@@ -30,8 +30,8 @@
 #include "ControlHandler.hpp"
 
 
-template <size_t rows, size_t cols>
-void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model grass) 
+template <size_t rows, size_t cols, size_t len>
+void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model (&models)[len]) 
 {
     for (int y=0; y < rows; y++) 
     {
@@ -41,12 +41,12 @@ void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model grass)
         {
             float posx = (x - cols / 2.0) * tileSize;
 
-            switch(terrain[y][x]) 
-            {
-                case 0:
-                    DrawModel(grass, (Vector3){posx, 0, posy}, 1.0f, WHITE);
-                    break;
+            // Draw Terrain Patch where there are other assets
+            if (terrain[y][x] != 0) {
+                // DrawModel(models[0], (Vector3){posx, 0, posy}, 1.0f, WHITE);
             }
+
+            DrawModel(models[terrain[y][x]], (Vector3){posx, 0, posy}, 1.0f, WHITE);
         }
     }
 }
@@ -60,12 +60,24 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "raylib");
 
-    // Load model
-    Model grass = LoadModel("assets/3DNaturePack/Models/Plate_Grass_01.obj");
+    // Load model5
+    const int modelCount = 3;
+    Model terrainModels [modelCount]= {};
+
+    //grass
+    terrainModels[0] = LoadModel("assets/terrain/Plate_Grass_01.glb");
+    //tree
+    terrainModels[1] = LoadModel("assets/terrain/Large_Oak_Fall_01.glb");
+    //tree2
+    terrainModels[2] = LoadModel("assets/terrain/Tree_01.glb");
+    
+
     // Create Terrain
     const int tileSize = 3;
     const int terrainSize = 10;
     int terrain [terrainSize][terrainSize] = {{}};
+    terrain[3][4] = 1;
+    terrain[5][6] = 2;
 
     // Camera Params
     Camera camera = { 0 };
@@ -117,7 +129,7 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawTerrain(terrain, tileSize, grass);
+                DrawTerrain(terrain, tileSize, terrainModels);
 
             EndMode3D();
 
@@ -131,7 +143,11 @@ int main()
         //----------------------------------------------------------------------------------
     }
 
-    UnloadModel(grass);
+    for (int i = 0; i < modelCount; i++)
+    {
+        UnloadModel(terrainModels[i]);
+    }
+
     UnloadShader(shader);
     
     // De-Initialization
