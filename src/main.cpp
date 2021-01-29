@@ -43,7 +43,7 @@ void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model (&models)[len])
 
             // Draw Terrain Patch where there are other assets
             if (terrain[y][x] != 0) {
-                // DrawModel(models[0], (Vector3){posx, 0, posy}, 1.0f, WHITE);
+                DrawModel(models[0], (Vector3){posx, 0, posy}, 1.0f, WHITE);
             }
 
             DrawModel(models[terrain[y][x]], (Vector3){posx, 0, posy}, 1.0f, WHITE);
@@ -65,7 +65,7 @@ int main()
     Model terrainModels [modelCount]= {};
 
     //grass
-    terrainModels[0] = LoadModel("assets/terrain/Plate_Grass_01.glb");
+    terrainModels[0] = LoadModel("assets/terrain/Plate_Grass_Dirt_01.glb");
     //tree
     terrainModels[1] = LoadModel("assets/terrain/Large_Oak_Fall_01.glb");
     //tree2
