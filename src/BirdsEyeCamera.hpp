@@ -1,4 +1,3 @@
-// Singleton
 #ifndef BIRDS_EYE_CAMERA
 #define BIRDS_EYE_CAMERA
 

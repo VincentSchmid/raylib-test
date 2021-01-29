@@ -25,59 +25,24 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlight.h"
 
+#include "GameSettings.hpp"
 #include "BirdsEyeCamera.hpp"
 #include "hotCorners.hpp"
 #include "ControlHandler.hpp"
+#include "GameMap.hpp"
 
-
-template <size_t rows, size_t cols, size_t len>
-void DrawTerrain(int (&terrain)[rows][cols], int tileSize, Model (&models)[len]) 
-{
-    for (int y=0; y < rows; y++) 
-    {
-        float posy = (y - rows / 2.0) * tileSize;
-
-        for (int x=0; x < cols; x++) 
-        {
-            float posx = (x - cols / 2.0) * tileSize;
-
-            // Draw Terrain Patch where there are other assets
-            if (terrain[y][x] != 0) {
-                DrawModel(models[0], (Vector3){posx, 0, posy}, 1.0f, WHITE);
-            }
-
-            DrawModel(models[terrain[y][x]], (Vector3){posx, 0, posy}, 1.0f, WHITE);
-        }
-    }
-}
 
 int main() 
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
-    InitWindow(screenWidth, screenHeight, "raylib");
-
-    // Load model5
-    const int modelCount = 3;
-    Model terrainModels [modelCount]= {};
-
-    //grass
-    terrainModels[0] = LoadModel("assets/terrain/Plate_Grass_Dirt_01.glb");
-    //tree
-    terrainModels[1] = LoadModel("assets/terrain/Large_Oak_Fall_01.glb");
-    //tree2
-    terrainModels[2] = LoadModel("assets/terrain/Tree_01.glb");
+    GameSettings* settings = GameSettings::getInstance();
+    InitWindow(settings->screenWidth, settings->screenHeight, "raylib");
     
+    GameMap gameMap(2, 3);
 
-    // Create Terrain
-    const int tileSize = 3;
-    const int terrainSize = 10;
-    int terrain [terrainSize][terrainSize] = {{}};
-    terrain[3][4] = 1;
-    terrain[5][6] = 2;
+    // Load model
+    const int modelCount = 3;
 
     // Camera Params
     Camera camera = { 0 };
@@ -87,11 +52,10 @@ int main()
     camera.fovy = 60.0f;
     camera.type = CAMERA_PERSPECTIVE;
 
-    const int hotCornerSize = 100;
-    const float cameraMoveSpeed = 20;
+    
 
     SetCameraMode(camera, CAMERA_CUSTOM);
-    BirdsEyeCamera birdsEyeCamera(&camera, cameraMoveSpeed);
+    BirdsEyeCamera birdsEyeCamera(&camera, settings->camSpeed);
 
     // Load shader and set up some uniforms
     Shader shader = LoadShader("data/base_lighting.vs", "data/lighting.fs");
@@ -113,7 +77,7 @@ int main()
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        checkCorners(screenWidth, screenHeight, hotCornerSize, &inputManager);
+        checkCorners(settings->screenWidth, settings->screenHeight, settings->hotCornerSize, &inputManager);
         // Update
         //----------------------------------------------------------------------------------
         birdsEyeCamera.update();
@@ -129,7 +93,7 @@ int main()
 
             BeginMode3D(camera);
 
-                DrawTerrain(terrain, tileSize, terrainModels);
+                gameMap.drawMap();
 
             EndMode3D();
 
@@ -143,10 +107,7 @@ int main()
         //----------------------------------------------------------------------------------
     }
 
-    for (int i = 0; i < modelCount; i++)
-    {
-        UnloadModel(terrainModels[i]);
-    }
+
 
     UnloadShader(shader);
     
@@ -157,3 +118,4 @@ int main()
 
     return 0;
 }
+
