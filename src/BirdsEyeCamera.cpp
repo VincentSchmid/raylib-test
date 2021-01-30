@@ -16,10 +16,7 @@ BirdsEyeCamera::BirdsEyeCamera(Vector3 camPos, Vector3 camTarget, Vector3 up, fl
     cameraMoveSpeed = camSpeed;
     cameraMoveDirection = {0};
 
-    forward = {camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z};
-    backward = {-forward.x, 0, -forward.z};
-    right = {forward.x, 0, -forward.z};
-    left = {-forward.x, 0, forward.z};
+    setOrientation();
 }
 
 void BirdsEyeCamera::moveForward() {
@@ -41,4 +38,11 @@ void BirdsEyeCamera::update() {
     camera.target = Vector3Add(camera.target, delta_pos);
     cameraMoveDirection = {0};
     UpdateCamera(&camera);
+}
+
+void BirdsEyeCamera::setOrientation() {
+    forward = {camera.target.x - camera.position.x, 0, camera.target.z - camera.position.z};
+    backward = {-forward.x, 0, -forward.z};
+    right = {forward.x, 0, -forward.z};
+    left = {-forward.x, 0, forward.z};
 }

@@ -24,5 +24,8 @@ class BirdsEyeCamera {
         void moveLeft();
         void moveRight();
         void update();
+
+    private:
+        void setOrientation();
 };
 #endif
