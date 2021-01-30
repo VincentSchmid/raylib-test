@@ -21,7 +21,7 @@ int main()
     InitWindow(settings->screenWidth, settings->screenHeight, "raylib");
     
     // Generate Map
-    GameMap gameMap(2, 3);
+    GameMap gameMap(settings->mapSize, settings->mapSize);
 
     // Generate Camera
     BirdsEyeCamera birdsEyeCamera(
