@@ -1,6 +1,4 @@
-#ifndef GAME_MAP
-#define GAME_MAP
-
+#pragma once
 
 #include <vector>
 #include <map>
@@ -10,6 +8,7 @@
 #include "GameSettings.hpp"
 
 using namespace std;
+
 
 class GameMap {
     private:
@@ -60,8 +59,7 @@ GameMap::GameMap(int rows, int cols) {
 }
 
 void GameMap::drawArray(vector<vector<int>> mapArray, map<int, Model> models, int tileSize) {
-    for (int y=0; y < rows; y++) 
-    {
+    for (int y=0; y < rows; y++) {
         float posy = (y - rows / 2.0) * tileSize;
 
         for (int x=0; x < cols; x++)  {
@@ -77,14 +75,11 @@ void GameMap::drawMap() {
 }
 
 void GameMap::unloadMap() {
-    for (int i = 0; i < terrainModelCount; i++)
-    {
+    for (int i = 0; i < terrainModelCount; i++) {
         UnloadModel(terrainModels[i]);
     }
 
-    for (int i = 0; i < vegetationModelCount; i++)
-    {
+    for (int i = 0; i < vegetationModelCount; i++) {
         UnloadModel(terrainModels[i]);
     }
 }
-#endif
