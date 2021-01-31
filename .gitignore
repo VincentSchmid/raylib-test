@@ -31,5 +31,4 @@
 *.app
 
 # Data
-assets/3DNaturePack/**
-assets/sailboat/**
+assets/download/**
