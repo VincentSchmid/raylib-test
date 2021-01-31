@@ -12,6 +12,7 @@ class GameAssets {
         modelMap terrainModels;
         modelMap vegetationModels;
         modelMap buildings;
+        map<int, modelMap *> allModels;
     
     private:
         /* Private constructor to prevent instancing. */
@@ -25,25 +26,24 @@ class GameAssets {
             buildings[1] = LoadModel("assets/buildings/Hut2.glb");
             buildings[2] = LoadModel("assets/buildings/Hut3.glb");
             buildings[3] = LoadModel("assets/buildings/Hut4.glb");
+
+            Texture buildingTexture = LoadTexture("assets/buildings/texture/wood_gradients.png");
+
+            for (int i = 0; i < buildings.size(); i++)
+                for (int m = 0; m < buildings[i].materialCount; m++)
+                    buildings[i].materials[m].maps[MAP_DIFFUSE].texture = buildingTexture;
+
+            allModels[0] = &terrainModels;
+            allModels[1] = &vegetationModels;
+            allModels[2] = &buildings;
         };
 
         /* Here will be the instance stored. */
         static GameAssets* instance;
 
     public:
-        void unload() {
-            for (int i = 0; i < terrainModels.size(); i++) {
-                UnloadModel(terrainModels[i]);
-            }
-
-            for (int i = 0; i < vegetationModels.size(); i++) {
-                UnloadModel(vegetationModels[i]);
-            }
-
-            for (int i = 0; i < buildings.size(); i++) {
-                UnloadModel(buildings[i]);
-            }
-        }
+        void applyShader(Shader shader);
+        void unload();
         /* Static access method. */
         static GameAssets* getInstance() {
             if (instance == 0)
@@ -54,5 +54,26 @@ class GameAssets {
             return instance;
         };
 };
+
+void GameAssets::applyShader(Shader shader) {
+    // for every modelMap
+    for (int i = 0; i < allModels.size(); i++)
+
+        // for every Model in modelMap
+        for (int n = 0; n < (* allModels[i]).size(); n++)
+
+            // for every Material in Model
+            for (int u = 0; u < (* allModels[i])[n].materialCount; u++)
+                (* allModels[i])[n].materials[u].shader = shader;
+}
+
+void GameAssets::unload() {
+    // for every modelMap
+    for (int i = 0; i < allModels.size(); i++)
+
+        // for every Model in modelMap
+        for (int n = 0; n < (* allModels[i]).size(); n++)
+            UnloadModel((* allModels[i])[n]);
+}
 
 GameAssets* GameAssets::instance = 0;

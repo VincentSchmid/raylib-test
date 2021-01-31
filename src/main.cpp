@@ -42,12 +42,16 @@ int main()
     shader.locs[LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
     shader.locs[LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
 
+    // Apply Shader to Models
+    assets->applyShader(shader);
+
     // Ambient light level
     int ambientLoc = GetShaderLocation(shader, "ambient");
     SetShaderValue(shader, ambientLoc, (float[4]){ 0.2f, 0.2f, 0.2f, 1.0f }, UNIFORM_VEC4);
 
     // Using just 1 point lights
-    CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader);
+    Light light = CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader);
+    (void)light;
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -70,7 +74,7 @@ int main()
             SetShaderValue(shader, shader.locs[LOC_VECTOR_VIEW], &birdsEyeCamera.camera.position.x, UNIFORM_VEC3);
 
             BeginMode3D(birdsEyeCamera.camera);
-                DrawModel(assets->buildings[0], {0}, 1.0f, WHITE);
+                DrawModel(assets->buildings[1], (Vector3){0, 0, 0}, 1.0f, WHITE);
                 gameMap.drawMap();
 
             EndMode3D();
