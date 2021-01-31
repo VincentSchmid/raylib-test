@@ -5,6 +5,7 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlight.h"
 
+#include "GameAssets.hpp"
 #include "GameSettings.hpp"
 #include "BirdsEyeCamera.hpp"
 #include "hotCorners.hpp"
@@ -20,8 +21,13 @@ int main()
     GameSettings* settings = GameSettings::getInstance();
     InitWindow(settings->screenWidth, settings->screenHeight, "raylib");
     
+    // Load Game Assets
+    GameAssets* assets = GameAssets::getInstance();
+
     // Generate Map
-    GameMap gameMap(settings->mapSize, settings->mapSize);
+    GameMap gameMap(settings->mapSize, settings->mapSize, 
+    &assets->terrainModels, &assets->vegetationModels, 
+    settings->tileSize);
 
     // Generate Camera
     BirdsEyeCamera birdsEyeCamera(
@@ -29,7 +35,7 @@ int main()
         settings->camFovy, settings->camType, settings->camSpeed);
 
     // Load GameControls
-    ControlHandler inputManager(&birdsEyeCamera);
+    ControlHandler controlHandler(&birdsEyeCamera);
 
     // Load shader and set up some uniforms
     Shader shader = LoadShader("data/base_lighting.vs", "data/lighting.fs");
@@ -49,7 +55,7 @@ int main()
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        checkCorners(settings->screenWidth, settings->screenHeight, settings->hotCornerSize, &inputManager);
+        checkCorners(settings->screenWidth, settings->screenHeight, settings->hotCornerSize, &controlHandler);
         // Update
         //----------------------------------------------------------------------------------
         birdsEyeCamera.update();
@@ -64,7 +70,7 @@ int main()
             SetShaderValue(shader, shader.locs[LOC_VECTOR_VIEW], &birdsEyeCamera.camera.position.x, UNIFORM_VEC3);
 
             BeginMode3D(birdsEyeCamera.camera);
-
+                DrawModel(assets->buildings[0], {0}, 1.0f, WHITE);
                 gameMap.drawMap();
 
             EndMode3D();
@@ -82,7 +88,7 @@ int main()
 
 
     UnloadShader(shader);
-    gameMap.unloadMap();
+    assets->unload();
     
     // De-Initialization
     //--------------------------------------------------------------------------------------

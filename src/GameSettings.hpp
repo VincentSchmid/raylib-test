@@ -27,13 +27,11 @@ class GameSettings
 
         // Map Settings
         int mapSize = 10;
-        int tileSize = 3;
+        float tileSize = 3.0f;
 
     private:
         /* Private constructor to prevent instancing. */
-        GameSettings() {
-            
-        };
+        GameSettings() {};
 
         /* Here will be the instance stored. */
         static GameSettings* instance;
