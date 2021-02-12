@@ -1,4 +1,5 @@
 from sys import argv
+from enum import Enum
 
 import bpy
 import glob
@@ -47,6 +48,12 @@ def triangulate_object(obj):
     bm.to_mesh(me)
     bm.free()
 
+# IMPORT
+
+def dae_import_mesh(filepath):
+    bpy.ops.wm.collada_import(
+        filepath=str(Path(filepath).resolve()))
+
 
 def obj_import_mesh(filepath):
     bpy.ops.import_scene.obj(
@@ -61,6 +68,7 @@ def fbx_import_mesh(filepath):
         axis_up="Y",
     )
 
+# EXPORT
 
 def obj_export_scene(filepath, traingulate):
     bpy.ops.export_scene.obj(
@@ -77,11 +85,36 @@ def glb_export_scene(filepath, triangulate):
         for obj in bpy.data.objects:
             triangulate(obj)
 
-    bpy.ops.export_scene.gltf(export_format='GLB', 
-        export_texture_dir='', export_colors=True, 
+    bpy.ops.export_scene.gltf(export_format='GLB', export_colors=True, 
         export_selected=False, export_yup=False, 
         filepath=str(Path(filepath).resolve())
     )
+
+
+def fbx_export_scene(filepath,triangulate):
+    if triangulate:
+        for obj in bpy.data.objects:
+            triangulate(obj)
+
+    bpy.ops.export_scene.fbx(
+        filepath=str(Path(filepath).resolve()) + ".fbx",
+        mesh_smooth_type="FACE", # For Unreal FACE or EDGE otherwise leave out
+        axis_forward="-Z",
+        axis_up="Y")
+
+# EXECUTION
+
+class ImportFun(Enum):
+    OBJ = {"suffix": "obj", "function": obj_import_mesh}
+    FBX = {"suffix": "fbx", "function": fbx_import_mesh}
+    DAE = {"suffix": "dae", "function": dae_import_mesh}
+
+
+class ExportFun(Enum):
+    OBJ = {"suffix": "obj", "function": obj_export_scene}
+    FBX = {"suffix": "fbx", "function": fbx_export_scene}
+    DAE = {"suffix": "glb", "function": glb_export_scene}
+    GLTF = {"suffix": "gltf", "function": glb_export_scene}
 
 
 def run(import_type, import_function, export_function, import_folder, eport_folder, triangulate):
@@ -96,19 +129,24 @@ commands = parse_argv(argv)
 missing_comm = check_commands(commands, ["it", "et", "if", "ef"])
 
 if not missing_comm is None:
-    print(f"+{missing_comm} flag is missing" )
+    print(f"-{missing_comm} flag is missing" )
 
 else:
     traingulate = "t" in commands.keys()
 
     import_type = commands["it"]
-    import_function = obj_import_mesh if import_type == "obj" else fbx_import_mesh
 
+    # get import function based on import type
+    for modelFormat in list(ImportFun):
+        if import_type == modelFormat.value["suffix"]:
+            import_function = modelFormat.value["function"]
+
+    # get export function based on export type
     export_type = commands["et"]
-    if export_type == "obj":
-        export_function = obj_export_scene
-    if export_type in ["glb", "gltf"] :
-        export_function = glb_export_scene
+
+    for modelFormat in list(ExportFun):
+        if export_type == modelFormat.value["suffix"]:
+            export_function = modelFormat.value["function"]
 
 
     import_mesh_folder = str(Path(commands["if"]).resolve()) # "/Users/vincentschmid/Documents/coding/games/testGame/assets/3DNaturePack/Models"
