@@ -10,3 +10,5 @@ What the project currently has is:
 - Main class that brings everything together and draws the map aswell as a 3d model.  
 - some free itch.io game assets converted properly to glb so they can be used with ray-lib.  
 - Python script to batch convert 3d meshes using blender.
+
+assets are stored using lfs storage
