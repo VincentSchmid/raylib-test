@@ -7,7 +7,7 @@ What the project currently has is:
 - A Game Map class that holds an array and can draw the array in the drawing phase of the gameloop  
 - GameSettings class that hold all Game Parameters  
 - Some kind of input / controlls handling class  
-- Main class that brings everything together and draws the map aswell as a 3d model.  
+- Main function that brings everything together and draws the map aswell as a 3d model.  
 - some free itch.io game assets converted properly to glb so they can be used with ray-lib.  
 - Python script to batch convert 3d meshes using blender.
 
